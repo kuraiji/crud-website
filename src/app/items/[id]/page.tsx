@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import {getItemById} from "./actions";
 import ItemComponent from "./item";
-import { cache } from 'react';
-import type { Metadata, ResolvingMetadata } from 'next'
+import type { Metadata } from 'next'
 
 type ItemPageProps = {
     params: Promise<{id: string}>;

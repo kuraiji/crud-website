@@ -10,23 +10,23 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { forgot_password } from "./actions";
+import {improved_signup} from './actions'
 import { useActionState } from 'react'
 import Link from 'next/link'
 
-export function ForgotPasswordForm({
+export function SignupForm({
                               className,
                               ...props
                           }: React.ComponentPropsWithoutRef<"div">) {
-    const [state, action, pending] = useActionState(forgot_password, {code: props.property!, message: ""});
-
+    // @ts-ignore
+    const [state, action, pending] = useActionState(improved_signup, undefined);
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl">Forgot Password</CardTitle>
+                    <CardTitle className="text-2xl">Sign up</CardTitle>
                     <CardDescription>
-                        Enter your email below to get a password reset
+                        Please enter an email, password and firstname
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -43,15 +43,42 @@ export function ForgotPasswordForm({
                                 />
                             </div>
                             {state?.errors?.email && <p className="text-red-700">{state.errors.email}</p>}
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">First Name</Label>
+                                <Input
+                                    id="firstname"
+                                    type="text"
+                                    name="firstname"
+                                    placeholder="Bob"
+                                    required
+                                />
+                            </div>
+                            {state?.errors?.firstname && <p className="text-red-700">{state.errors.firstname}</p>}
+                            <div className="grid gap-2">
+                                <div className="flex items-center">
+                                    <Label htmlFor="password">Password</Label>
+                                </div>
+                                <Input id="password" type="password" name="password" required />
+                            </div>
+                            {state?.errors?.password && (
+                                <div className="text-red-700">
+                                    <p>Password must:</p>
+                                    <ul>
+                                        {state.errors.password.map((error) => (
+                                            <li key={error}>- {error}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             <Button formAction={action} disabled={pending} type="submit" className="w-full">
-                                Send Password Reset Email
+                                Signup
                             </Button>
                             <div className="text-red-700 flex justify-center items-center">
                                 {state?.message && <p>{state.message}</p>}
                             </div>
                         </div>
                         <div className="mt-4 text-center text-sm">
-                            Did you remember your password?{" "}
+                            Did you remember you have account?{" "}
                             <Link className="underline underline-offset-4" href="/login">
                                 Login Here
                             </Link>
