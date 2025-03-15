@@ -5,11 +5,12 @@ type ColorSelectorProps = {
     colors: string[];
     selectedIndex: number;
     onClick: (index: number) => void;
+    className?: string
 }
 
 export default function ColorSelector(props: ColorSelectorProps) {
     return (
-        <div>
+        <div className={props.className}>
             <div className="relative">
                 <div className="flex gap-2">
                     {props.colors.map((color, index) =>
@@ -19,7 +20,9 @@ export default function ColorSelector(props: ColorSelectorProps) {
                 <div className="absolute top-0 flex gap-2">
                     {props.colors.map((_, index) =>
                         <Circle color={index === props.selectedIndex ? "#4169E1" : ""}
-                                className="size-10"
+                                className={`size-10 ${index === props.selectedIndex 
+                                    ? "" : "cursor-pointer"}`
+                                }
                                 key={index}
                                 strokeWidth={2}
                                 onClick={()=>{props.onClick(index)}}

@@ -18,10 +18,11 @@ export async function getItemById(id: string) {
         return await fetch(`${process.env.NEXT_PUBLIC_CRUD_URL}/item/${id}`,
             {
                 method: 'GET',
-                cache: 'no-store',
+                cache: 'force-cache',
                 headers: {
                     "authorizationToken": `${process.env.NEXT_PUBLIC_CRUD_ANON_KEY}`,
-                }
+                },
+                next: { revalidate: 60}
             }).then(async function (res) {
                 if (res.status === 400) throw new Error(res.statusText);
                 const data: Item  = await res.json();
