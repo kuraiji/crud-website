@@ -1,6 +1,7 @@
 import { PasswordResetForm } from "@/app/password_reset/password_reset";
 import { redirect } from 'next/navigation'
 import type {Metadata} from "next";
+import {createClient} from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
     title: "Kuraiji.me: Password Reset",
@@ -12,8 +13,13 @@ type PasswordResetPageProps = {
 }
 
 export default async function PasswordResetPage({searchParams}: PasswordResetPageProps) {
-    const {code} = await searchParams;
+    const { code } = await searchParams;
+    const supabase = await createClient()
 
+    const { data } = await supabase.auth.getUser();
+    if(data?.user) {
+        redirect('/');
+    }
     if(!code) {
         redirect('/error')
     }

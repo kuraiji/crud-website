@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import {ResetPasswordFormState, ResetPasswordFormSchema } from "@/lib/definitions";
+import { type EmailOtpType } from '@supabase/supabase-js'
 
 export async function reset_password(state: ResetPasswordFormState, formData: FormData) {
     const validateFields = ResetPasswordFormSchema.safeParse({
@@ -17,7 +18,12 @@ export async function reset_password(state: ResetPasswordFormState, formData: Fo
     }
 
     const supabase = await createClient();
-    const authRes = await supabase.auth.exchangeCodeForSession(state!.code)
+    const type: EmailOtpType | null = "recovery"
+    const token_hash = state!.code;
+    const authRes = await supabase.auth.verifyOtp({
+        type,
+        token_hash
+    })
     if(authRes.error) {
         return {
             message: authRes.error.message,

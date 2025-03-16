@@ -12,11 +12,9 @@ export async function forgot_password(state: ForgotPasswordFormState, formData: 
             code: state!.code
         }
     }
-    console.log(`${state!.code}/password_reset`);
+
     const supabase = await createClient()
-    await supabase.auth.resetPasswordForEmail(formData.get('email') as string, {
-        redirectTo: `${state!.code}/password_reset`,
-    })
+    await supabase.auth.resetPasswordForEmail(formData.get('email') as string)
     return {
         message: "If account does exist, an email has been sent. Reset your password with it.",
         code: state!.code
