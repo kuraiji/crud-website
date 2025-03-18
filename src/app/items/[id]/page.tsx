@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import {getItemById} from "./actions";
 import ItemComponent from "./item";
 import type { Metadata } from 'next'
+import {createClient} from "@/utils/supabase/server";
 
 type ItemPageProps = {
     params: Promise<{id: string}>;
@@ -26,6 +27,11 @@ export default async function ItemPage(
     const { id } = await params;
     const { color } = await searchParams;
     const item = await getItemById(id)
+    const supabase = await createClient()
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
 
     if(item == null) {
         redirect('/error')
@@ -44,6 +50,6 @@ export default async function ItemPage(
     }
 
     return (
-        <ItemComponent item={item} selectedColor={selectedColor}/>
+        <ItemComponent item={item} selectedColor={selectedColor} user={user} />
     );
 }

@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import type { Metadata } from 'next';
+import {getShoppingCart, putShoppingCart} from "@/app/actions";
 
 export const metadata: Metadata = {
     title: "Default",
@@ -19,13 +20,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children, title, className
 }: Readonly<{
   children: React.ReactNode;
   title: string;
   className?: string;
 }>) {
+
+    const shoppingcart = await getShoppingCart();
+    if(!shoppingcart) {
+        await putShoppingCart();
+    }
+
   return (
     <html lang="en">
         <head>
@@ -35,7 +42,7 @@ export default function RootLayout({
       <body
         className={`${className ? className : ""} ${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-      <Header/>
+      <Header shoppingcart={shoppingcart}/>
         {children}
         <Footer/>
       </body>

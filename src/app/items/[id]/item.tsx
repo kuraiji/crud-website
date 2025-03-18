@@ -6,20 +6,40 @@ import ColorSelector from "@/components/colorselector";
 import { Item } from "./actions"
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from 'next/navigation'
+import type { User } from '@supabase/supabase-js'
+import {LOCAL_STORAGE_KEY, ShoppingCartTypeWithoutUser, ADD_TO_CART_EVENT} from "@/lib/definitions";
+
 
 type ItemProps = {
     item: Item;
     selectedColor?: number;
+    user?: User | null;
 }
 
 export default function ItemComponent(props: ItemProps) {
+    const searchParams = useSearchParams();
     const [selectedColor, setSelectedColor] = useState(props.selectedColor);
 
     const onColorSelectorClick = (index: number) => {
         console.log("onColorSelectorClick", index);
         window.history.pushState(null, '', `/items/${props.item.id}?color=${props.item.color![index]}`);
         setSelectedColor(index);
-     }
+    }
+
+    const onAddToCart = () => {
+        const color = searchParams.get("color");
+        const localstorageitem = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const shoppingcart: ShoppingCartTypeWithoutUser = localstorageitem ? JSON.parse(localstorageitem) : [];
+        shoppingcart.push({
+            itemid: props.item.id,
+            itemname: props.item.itemname,
+            price: props.item.price,
+            color: color ? color : undefined,
+        });
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(shoppingcart));
+        window.dispatchEvent(new CustomEvent(ADD_TO_CART_EVENT, {detail: shoppingcart}));
+    }
 
     return (
         <div>
@@ -32,6 +52,7 @@ export default function ItemComponent(props: ItemProps) {
                        width={1155}
                        height={1500}
                        className="w-80 md:w-1/4 h-fit"
+                       priority={true}
                 />
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl">{props.item.itemname}</h1>
@@ -51,7 +72,9 @@ export default function ItemComponent(props: ItemProps) {
 
                         : null
                     }
-                    <Button className="bg-amber-300 text-black hover:bg-amber-400 cursor-pointer w-50">
+                    <Button onClick={onAddToCart} disabled={!props.user}
+                        className="bg-amber-300 text-black hover:bg-amber-400 cursor-pointer w-50"
+                    >
                         Add to Cart
                     </Button>
                 </div>

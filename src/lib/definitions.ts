@@ -1,5 +1,20 @@
 import { z } from 'zod'
 
+export const LOCAL_STORAGE_KEY = "shoppingcart";
+export const ADD_TO_CART_EVENT = "addToCart";
+
+export type ShoppingCartType = {
+    userid: string,
+    cart: ShoppingCartTypeWithoutUser
+}
+
+export type ShoppingCartTypeWithoutUser = {
+    itemid: string,
+    itemname: string,
+    price: number,
+    color?: string
+}[]
+
 export const LoginFormSchema = z.object({
     email: z
         .string()
@@ -63,6 +78,15 @@ export const SignupFormSchema = z.object({
         .trim()
 });
 
+export const NameFormSchema = z.object({
+    firstname: z
+        .string()
+        .min(2, { message: 'Be at least 8 characters long' })
+        .max(20, { message: 'Can\'t be more than 20 characters long.' })
+        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
+        .trim()
+});
+
 export type FormState =
     | {
     errors?: {
@@ -78,7 +102,7 @@ export type SignupFormState =
     errors?: {
         email?: string[]
         password?: string[]
-        name?: string[]
+        firstname?: string[]
     }
     message?: string
 }
@@ -101,5 +125,14 @@ export type ResetPasswordFormState =
     }
     message?: string
     code: string
+}
+    | undefined;
+
+export type NameFormState =
+    | {
+    errors?: {
+        firstname?: string[]
+    }
+    message?: string
 }
     | undefined;

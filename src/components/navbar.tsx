@@ -1,4 +1,5 @@
 'use client'
+import { ShoppingCart } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,13 +9,46 @@ import {
 import { Menu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { User } from '@supabase/supabase-js'
+import {LOCAL_STORAGE_KEY, ADD_TO_CART_EVENT, ShoppingCartType, ShoppingCartTypeWithoutUser} from "@/lib/definitions";
+import { useEffect, useState } from "react";
+import {putShoppingCart} from "@/app/actions";
 
 const HOME_URL = "/";
 const LOGIN_URL = "/login";
 const ACCOUNT_URL = "/account";
+const SHOPPING_CART_URL = "/shopping_cart";
 
-export default function Navbar(props: {user: User | null}) {
+declare global {
+    interface WindowEventMap {
+        'addToCart': CustomEvent
+    }
+}
+
+export default function Navbar(props: {
+    user: User | null
+    shoppingCart: ShoppingCartType | null
+}) {
+    const [length, setLength] = useState(0);
+
+    useEffect(() => {
+        setLength(props.shoppingCart?.cart.length ? props.shoppingCart.cart.length : 0);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(props.shoppingCart?.cart ? props.shoppingCart?.cart  : []))
+        const handleStorage = async (event: CustomEvent<ShoppingCartTypeWithoutUser>) => {
+             setLength(event.detail.length);
+             await putShoppingCart({
+                 userid: props.user?.id,
+                 shoppingCart: {
+                     userid: props.user?.id!,
+                     cart: event.detail
+                 }
+             });
+        }
+        window.addEventListener(ADD_TO_CART_EVENT, handleStorage);
+        return () => window.removeEventListener(ADD_TO_CART_EVENT, handleStorage)
+    }, []);
+
     return (
         <Card className="container py-3 px-4 border-0 flex flex-row items-center
             justify-between gap-6 rounded-2xl mt-5"
@@ -28,6 +62,24 @@ export default function Navbar(props: {user: User | null}) {
                 <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
                     {props.user ? <a href={ACCOUNT_URL}>Account</a> : <a href={LOGIN_URL}>Get Started</a>}
                 </Button>
+                {props.user ?
+                    <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
+                        <a href={SHOPPING_CART_URL}>
+                            <div className="relative inline-block">
+                                <ShoppingCart className="w-6 h-6" />
+                                {length > 0 && (
+                                    <Badge
+                                        variant="destructive"
+                                        className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
+                                    >
+                                        {length}
+                                    </Badge>
+                                )}
+                            </div>
+                        </a>
+                    </Button>
+                    : null
+                }
                 <div className="flex md:hidden mr-2 items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -40,9 +92,29 @@ export default function Navbar(props: {user: User | null}) {
                                 <a href={HOME_URL}>Home</a>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Button className="w-full text-sm">
-                                    {props.user ? <a href={ACCOUNT_URL}>Account</a> : <a href={LOGIN_URL}>Get Started</a>}
-                                </Button>
+                                <div className="flex flex-col gap-2">
+                                    <Button className="w-full text-sm">
+                                        {props.user ? <a href={ACCOUNT_URL}>Account</a> : <a href={LOGIN_URL}>Get Started</a>}
+                                    </Button>
+                                    {props.user ?
+                                        <Button className="w-full text-sm">
+                                            <a href={SHOPPING_CART_URL}>
+                                                <div className="relative inline-block">
+                                                    <ShoppingCart className="w-6 h-6" />
+                                                    {length > 0 && (
+                                                        <Badge
+                                                            variant="destructive"
+                                                            className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
+                                                        >
+                                                            {length}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </a>
+                                        </Button>
+                                        : null
+                                    }
+                                </div>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

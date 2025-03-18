@@ -1,5 +1,5 @@
 "use client"
-import { ArrowDown, ArrowUp, Lock, UserRoundX, UserRound } from "lucide-react"
+import { ArrowDown, ArrowUp, UserRoundX, UserRound, LogOut } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { User } from '@supabase/supabase-js'
+import {signout, deleteAccount, update_user} from "@/app/account/actions";
+import {useActionState, useState} from "react";
+import {DBUser} from "@/app/actions";
 
 const transactions = [
     {
@@ -52,9 +55,18 @@ const transactions = [
     },
 ]
 
-export default function SettingsPage(props: {user: User}) {
+type DeleteErrorType = {
+    message: string | undefined,
+    disabled: boolean,
+}
+
+export default function SettingsPage(props: {user: User, dbUser: DBUser}) {
+    const [deleteError, setDeleteError] = useState<DeleteErrorType>({message: undefined, disabled: false});
+    // @ts-ignore
+    const [updateUserState, updateUserAction, updateUserPending] = useActionState(update_user, undefined);
     return (
         <div className="container mx-auto py-6 space-y-8">
+            <h1 className="font-bold">Welcome {props.dbUser.firstname}!</h1>
             <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div className="w-full md:w-1/3 space-y-6">
                     <Card>
@@ -129,46 +141,43 @@ export default function SettingsPage(props: {user: User}) {
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="first-name">First name</Label>
-                                    <Input id="first-name" defaultValue="John" />
+                        <form>
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="firstname">First name</Label>
+                                        <Input id="firstname" type="text" name="firstname"  defaultValue={props.dbUser.firstname} required />
+                                        <p className="text-red-700">{updateUserState?.errors?.firstname}</p>
+                                        <p className="text-red-700">{updateUserState?.message}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="cursor-pointer" >Save Changes</Button>
-                        </CardFooter>
+                            </CardContent>
+                            <CardFooter>
+                                <Button formAction={updateUserAction} disabled={updateUserPending} type="submit"
+                                    className="cursor-pointer"
+                                >
+                                    Save Changes
+                                </Button>
+                            </CardFooter>
+                        </form>
                     </Card>
                     <Card>
                         <CardHeader>
                             <div className="flex items-center gap-4">
                                 <div className="p-2 rounded-full bg-primary/10">
-                                    <Lock className="h-6 w-6 text-primary" />
+                                    <LogOut className="h-6 w-6 text-primary" />
                                 </div>
                                 <div>
-                                    <CardTitle>Password</CardTitle>
-                                    <CardDescription>Change your password</CardDescription>
+                                    <CardTitle>Sign Out</CardTitle>
+                                    <CardDescription>Sign out from the website</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="current-password">Current password</Label>
-                                <Input id="current-password" type="password" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="new-password">New password</Label>
-                                <Input id="new-password" type="password" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="confirm-password">Confirm password</Label>
-                                <Input id="confirm-password" type="password" />
-                            </div>
-                        </CardContent>
                         <CardFooter>
-                            <Button className="cursor-pointer" >Update Password</Button>
+                            <Button onClick={async () => await signout()}
+                                    className="cursor-pointer">
+                                Sign out
+                            </Button>
                         </CardFooter>
                     </Card>
                     <Card>
@@ -184,7 +193,17 @@ export default function SettingsPage(props: {user: User}) {
                             </div>
                         </CardHeader>
                         <CardFooter>
-                            <Button className="cursor-pointer" variant="destructive">Delete Account</Button>
+                            <div className="flex flex-col">
+                                <div>
+                                    <Button onClick={async () => await deleteAccount(setDeleteError)}
+                                            className="cursor-pointer" variant="destructive"
+                                            disabled={deleteError.disabled}
+                                    >
+                                        Delete Account
+                                    </Button>
+                                </div>
+                                <p className="text-red-700">{deleteError.message}</p>
+                            </div>
                         </CardFooter>
                     </Card>
                 </div>
