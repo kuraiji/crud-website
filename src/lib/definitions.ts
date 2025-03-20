@@ -1,19 +1,46 @@
 import { z } from 'zod'
 
+type ErrorName =
+    | 'NOT_SIGNED_IN'
+
+export class CredentialError extends Error {
+    name: ErrorName;
+    message: string;
+    cause: any;
+
+    constructor(message: string, cause: any) {
+        super();
+        this.name = "NOT_SIGNED_IN";
+        this.message = message;
+        this.cause = cause;
+    }
+}
+
 export const LOCAL_STORAGE_KEY = "shoppingcart";
 export const ADD_TO_CART_EVENT = "addToCart";
 
-export type ShoppingCartType = {
+export type ShoppingCartRequestType = {
     userid: string,
     cart: ShoppingCartTypeWithoutUser
 }
-
-export type ShoppingCartTypeWithoutUser = {
+export type ShoppingCartTypeWithoutUser = ShoppingCartType[]
+export type ShoppingCartType = {
     itemid: string,
     itemname: string,
     price: number,
+    imageid: string,
     color?: string
-}[]
+}
+export type ShoppingCartResponseType = {
+    userid: string,
+    cart: {
+        itemid: string,
+        itemname: string,
+        price: string,
+        imageid: string,
+        color?: string
+    }[]
+}
 
 export const LoginFormSchema = z.object({
     email: z

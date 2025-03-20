@@ -1,6 +1,6 @@
 'use server'
 import {createClient} from '@/utils/supabase/server'
-import {ShoppingCartType} from "@/lib/definitions";
+import {CredentialError, ShoppingCartRequestType, ShoppingCartResponseType, ShoppingCartType} from "@/lib/definitions";
 import {redirect} from "next/navigation";
 
 //DynamoDB
@@ -50,7 +50,11 @@ export async function getShoppingCart(props: {userid: string | undefined} | null
 
         const {
             data: { user },
+            error
         } = await supabase.auth.getUser();
+        if(error){
+            throw new CredentialError(error.message, error);
+        }
         id = user!.id
     }
     else {
@@ -66,10 +70,22 @@ export async function getShoppingCart(props: {userid: string | undefined} | null
                     "authorizationToken": `${process.env.NEXT_PUBLIC_CRUD_ANON_KEY}`,
                 },
             }).then(async function (res) {
-                if(res.status === 400) {
+                if(res.status === 400 || res.status === 502) {
                     return null;
                 }
-                const data: ShoppingCartType = await res.json();
+                const json: ShoppingCartResponseType = await res.json();
+                const data: ShoppingCartRequestType = {
+                    userid: json.userid,
+                    cart: json.cart.map((item) => {
+                        return {
+                            itemid: item.itemid,
+                            itemname: item.itemname,
+                            price: parseFloat(item.price),
+                            imageid: item.imageid,
+                            color: item.color,
+                        } as ShoppingCartType
+                    })
+                }
                 return data;
         });
     }
@@ -82,7 +98,7 @@ export async function getShoppingCart(props: {userid: string | undefined} | null
 export async function putShoppingCart(props:
                                           {
                                               userid: string | undefined
-                                              shoppingCart: ShoppingCartType | undefined
+                                              shoppingCart: ShoppingCartRequestType | undefined
                                           } | null = null
 ) {
     let id: string;

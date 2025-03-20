@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { User } from '@supabase/supabase-js'
-import {LOCAL_STORAGE_KEY, ADD_TO_CART_EVENT, ShoppingCartType, ShoppingCartTypeWithoutUser} from "@/lib/definitions";
+import {LOCAL_STORAGE_KEY, ADD_TO_CART_EVENT, ShoppingCartRequestType, ShoppingCartTypeWithoutUser} from "@/lib/definitions";
 import { useEffect, useState } from "react";
 import {putShoppingCart} from "@/app/actions";
 
@@ -28,15 +28,15 @@ declare global {
 
 export default function Navbar(props: {
     user: User | null
-    shoppingCart: ShoppingCartType | null
+    shoppingCart: ShoppingCartRequestType | null
 }) {
     const [length, setLength] = useState(0);
 
     useEffect(() => {
-        setLength(props.shoppingCart?.cart.length ? props.shoppingCart.cart.length : 0);
+        setLength(props.shoppingCart && props.shoppingCart?.cart.length ? props.shoppingCart.cart.length : 0);
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(props.shoppingCart?.cart ? props.shoppingCart?.cart  : []))
         const handleStorage = async (event: CustomEvent<ShoppingCartTypeWithoutUser>) => {
-             setLength(event.detail.length);
+            setLength(event.detail.length);
              await putShoppingCart({
                  userid: props.user?.id,
                  shoppingCart: {
@@ -45,9 +45,19 @@ export default function Navbar(props: {
                  }
              });
         }
+        const handleNotFocusedTabUpdateAmount = (event: StorageEvent) => {
+            if(!event.newValue) {
+                return;
+            }
+            setLength(JSON.parse(event.newValue).length);
+        }
         window.addEventListener(ADD_TO_CART_EVENT, handleStorage);
-        return () => window.removeEventListener(ADD_TO_CART_EVENT, handleStorage)
-    }, []);
+        window.addEventListener("storage", handleNotFocusedTabUpdateAmount);
+        return () => {
+            window.removeEventListener(ADD_TO_CART_EVENT, handleStorage);
+            window.removeEventListener("storage", handleNotFocusedTabUpdateAmount);
+        }
+    }, [props.shoppingCart]);
 
     return (
         <Card className="container py-3 px-4 border-0 flex flex-row items-center

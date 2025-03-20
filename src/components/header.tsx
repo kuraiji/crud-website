@@ -1,8 +1,8 @@
 import Navbar from "@/components/navbar";
 import { createClient } from '@/utils/supabase/server';
-import {ShoppingCartType} from "@/lib/definitions";
+import {ShoppingCartRequestType} from "@/lib/definitions";
 
-export default async function Header(props: {shoppingcart: ShoppingCartType| null}) {
+export default async function Header(props: {shoppingcart: ShoppingCartRequestType| null}) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser()
     return (

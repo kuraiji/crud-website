@@ -22,7 +22,6 @@ export default function ItemComponent(props: ItemProps) {
     const [selectedColor, setSelectedColor] = useState(props.selectedColor);
 
     const onColorSelectorClick = (index: number) => {
-        console.log("onColorSelectorClick", index);
         window.history.pushState(null, '', `/items/${props.item.id}?color=${props.item.color![index]}`);
         setSelectedColor(index);
     }
@@ -35,8 +34,10 @@ export default function ItemComponent(props: ItemProps) {
             itemid: props.item.id,
             itemname: props.item.itemname,
             price: props.item.price,
+            imageid: props.item.imageid,
             color: color ? color : undefined,
         });
+        if(shoppingcart.length > 50) return;
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(shoppingcart));
         window.dispatchEvent(new CustomEvent(ADD_TO_CART_EVENT, {detail: shoppingcart}));
     }

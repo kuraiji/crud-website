@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import type { Metadata } from 'next';
 import {getShoppingCart, putShoppingCart} from "@/app/actions";
+import {ShoppingCartRequestType} from "@/lib/definitions";
 
 export const metadata: Metadata = {
     title: "Default",
@@ -27,12 +28,16 @@ export default async function RootLayout({
   title: string;
   className?: string;
 }>) {
-
-    const shoppingcart = await getShoppingCart();
-    if(!shoppingcart) {
-        await putShoppingCart();
+    let shoppingcart: ShoppingCartRequestType | null;
+    try {
+        shoppingcart = await getShoppingCart();
+        if(!shoppingcart) {
+            await putShoppingCart();
+        }
     }
-
+    catch (error) {
+        shoppingcart = null;
+    }
   return (
     <html lang="en">
         <head>

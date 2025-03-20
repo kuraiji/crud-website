@@ -2,7 +2,7 @@ import Image from "next/image";
 
 /*
 TODO:
--Shopping Cart Page, Purchase and Transactions
+-Purchase and Transactions
 -Update Delete Account
 -Add More Items
 -Front Page
