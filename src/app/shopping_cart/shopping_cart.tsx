@@ -8,24 +8,30 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useLocalStorage } from "usehooks-ts";
-import {ADD_TO_CART_EVENT, LOCAL_STORAGE_KEY, ShoppingCartType} from "@/lib/definitions";
+import {ADD_TO_CART_EVENT, LOCAL_STORAGE_KEY, ShoppingCartType, ShoppingCartTypeWithoutUser} from "@/lib/definitions";
 import CartItem from "@/components/cart_item";
 import Nossr from "@/components/nossr";
 import { useRouter } from "next/navigation";
 import {useCallback, useState} from "react";
+import {putTransaction} from "@/app/shopping_cart/actions";
 
 export default function ShoppingCart(props: {User: User}) {
     const router = useRouter();
     const [cart, setCart] = useLocalStorage(LOCAL_STORAGE_KEY, []);
     const [shipping, setShipping] = useState("standard");
+    const [busy, setBusy] = useState<boolean>(false);
     const shippingPrice = shipping === "standard" ? 4.99 :
         shipping === "express" ? 14.99 : 0.00;
     const tax = 7.50;
     const CalculateTotal = useCallback(() => {
         let total = 0;
-        cart.forEach((item: ShoppingCartType) => {total += item.price})
+        cart.forEach((item: ShoppingCartType) => {
+            const price = typeof item.price === "number" ? item.price : parseFloat(item.price);
+            total += price
+        })
         return total;
     }, [cart]);
+
     const OnDelete = (index: number) => {
         const temp = cart.filter((_, i) => {
             return i !== index;
@@ -36,6 +42,24 @@ export default function ShoppingCart(props: {User: User}) {
     const OnDeleteAll = () => {
         setCart([]);
         window.dispatchEvent(new CustomEvent(ADD_TO_CART_EVENT, {detail: []}));
+    }
+    const OnPurchase = async ()  => {
+        setBusy(true);
+        const subtotal = CalculateTotal();
+        const tempcart = cart as ShoppingCartTypeWithoutUser;
+        const res = await putTransaction({
+            userid: props.User.id,
+            cart: tempcart,
+            shipping: shippingPrice as number,
+            tax: tax,
+            subtotal: subtotal
+        });
+        if(res === 200) {
+            OnDeleteAll();
+            await new Promise(f => setTimeout(f, 60));
+            router.push("/?purchase_success");
+        }
+        setBusy(false);
     }
     return (
         <div className="container mx-auto px-4 py-8">
@@ -118,12 +142,15 @@ export default function ShoppingCart(props: {User: User}) {
                                 <div className="flex justify-between font-semibold text-lg">
                                     <span>Total</span>
                                     <Nossr>
-                                        <span>${(CalculateTotal() + shippingPrice + tax).toFixed(2)}</span>
+                                        <span>${
+                                            typeof (CalculateTotal() + shippingPrice + tax) === "number" ? (CalculateTotal() + shippingPrice + tax).toFixed(2) : 0
+                                        }</span>
                                     </Nossr>
                                 </div>
-                                <Button
+                                <Button onClick={OnPurchase}
                                     className="w-full"
                                     size="lg"
+                                    disabled={busy || cart.length === 0}
                                 >
                                     <ShoppingBag className="mr-2 h-4 w-4" />
                                     Purchase

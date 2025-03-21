@@ -1,15 +1,15 @@
-import { createClient } from '@/utils/supabase/server'
-import SettingsPage from "@/app/account/account";
+import type {Metadata} from "next";
+import {createClient} from "@/utils/supabase/server";
 import {redirect} from "next/navigation";
 import {getDBUser, getTransaction} from "@/app/actions";
-import type {Metadata} from "next";
+import TransactionPage from "@/app/transactions/transaction_page"
 
 export const metadata: Metadata = {
-    title: "Kuraiji.me: Account Page",
-    description: "The account page",
+    title: "Kuraiji.me: Transaction Page",
+    description: "The transaction page",
 }
 
-export default async function Account() {
+export default async function TransactionServerPage() {
     const supabase = await createClient()
 
     const {
@@ -27,6 +27,11 @@ export default async function Account() {
     }
 
     const transaction = await getTransaction(user.id);
+    if(!transaction || transaction.length === 0) {
+        redirect('/');
+    }
 
-    return <SettingsPage user={user} dbUser={dbUser} transactions={transaction} />
+    return (
+        <TransactionPage initalTransaction={transaction!} />
+    );
 }

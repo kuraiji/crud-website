@@ -1,6 +1,12 @@
 'use server'
 import {createClient} from '@/utils/supabase/server'
-import {CredentialError, ShoppingCartRequestType, ShoppingCartResponseType, ShoppingCartType} from "@/lib/definitions";
+import {
+    CredentialError,
+    ShoppingCartRequestType,
+    ShoppingCartResponseType,
+    ShoppingCartType, TransactionRequestType, TransactionResponseType,
+    TransactionResponseTypeStringed
+} from "@/lib/definitions";
 import {redirect} from "next/navigation";
 
 //DynamoDB
@@ -136,4 +142,45 @@ export async function putShoppingCart(props:
         console.log("Error: ", e);
         redirect('/error')
     }
+}
+
+export async function getTransaction(userid: string, page: number = 0) {
+    try {
+        return await fetch(`${process.env.NEXT_PUBLIC_CRUD_URL}/transactions/${userid}?page=${page}`,
+            {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    "authorizationToken": `${process.env.NEXT_PUBLIC_CRUD_ANON_KEY}`,
+                },
+            }).then(async function (res) {
+            if(res.status === 400 || res.status === 502) {
+                return null;
+            }
+            const json_data: TransactionResponseTypeStringed = await res.json();
+            const data: TransactionResponseType = json_data.map((transaction) => {
+                return {
+                    userid: transaction.userid,
+                    tax: parseFloat(transaction.tax),
+                    shipping: parseFloat(transaction.shipping),
+                    subtotal: parseFloat(transaction.subtotal),
+                    timestamp: transaction.timestamp,
+                    cart: transaction.cart.map((cart) => {
+                        return {
+                            itemid: cart.itemid,
+                            itemname: cart.itemname,
+                            imageid: cart.imageid,
+                            color: cart.color,
+                            price: parseFloat(cart.price),
+                        }
+                    })
+                }
+            })
+            return data;
+        });
+    }
+    catch (e) {
+        console.log("Error: ", e);
+    }
+    return null;
 }

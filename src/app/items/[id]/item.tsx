@@ -27,7 +27,10 @@ export default function ItemComponent(props: ItemProps) {
     }
 
     const onAddToCart = () => {
-        const color = searchParams.get("color");
+        const color = props.item.color ?
+            searchParams.get("color") ?
+                searchParams.get("color") :
+                props.item.color[0] : null;
         const localstorageitem = localStorage.getItem(LOCAL_STORAGE_KEY);
         const shoppingcart: ShoppingCartTypeWithoutUser = localstorageitem ? JSON.parse(localstorageitem) : [];
         shoppingcart.push({

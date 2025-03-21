@@ -41,6 +41,42 @@ export type ShoppingCartResponseType = {
         color?: string
     }[]
 }
+export type TransactionRequestType = {
+    userid: string,
+    cart: ShoppingCartTypeWithoutUser,
+    subtotal: number,
+    shipping: number,
+    tax: number
+}
+export type TransactionResponseTypeStringed = {
+    userid: string,
+    timestamp: string,
+    cart: {
+        itemid: string,
+        itemname: string,
+        price: string,
+        imageid: string,
+        color?: string
+    }[],
+    subtotal: string,
+    shipping: string,
+    tax: string
+}[]
+export type TransactionResponseType = TransactionResponseTypeIndividual[]
+export type TransactionResponseTypeIndividual = {
+    userid: string,
+    timestamp: string,
+    cart: {
+        itemid: string,
+        itemname: string,
+        price: number,
+        imageid: string,
+        color?: string
+    }[],
+    subtotal: number,
+    shipping: number,
+    tax: number
+}
 
 export const LoginFormSchema = z.object({
     email: z
