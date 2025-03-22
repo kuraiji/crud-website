@@ -60,7 +60,7 @@ export async function getShoppingCart(props: {userid: string | undefined} | null
             error
         } = await supabase.auth.getUser();
         if(error){
-            throw new CredentialError(error.message, error);
+            throw new CredentialError(error.message);
         }
         id = user!.id
     }
