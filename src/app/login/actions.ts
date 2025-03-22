@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import {FormState, LoginFormSchema } from "@/lib/definitions";
 
-export async function improved_login(state: FormState, formData: FormData) {
+export async function improved_login(_: FormState, formData: FormData) {
     const validateFields = LoginFormSchema.safeParse({
         email: formData.get('email'),
         password: formData.get('password'),

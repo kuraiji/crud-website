@@ -4,7 +4,7 @@ import {redirect} from "next/navigation";
 import {revalidatePath} from "next/cache";
 import {SignupFormState, SignupFormSchema} from "@/lib/definitions";
 
-export async function improved_signup(state: SignupFormState, formData: FormData) {
+export async function improved_signup(_: SignupFormState, formData: FormData) {
     const validateFields = SignupFormSchema.safeParse({
         email: formData.get('email'),
         password: formData.get('password'),

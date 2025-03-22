@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { NameFormSchema, NameFormState } from "@/lib/definitions";
 
-export async function update_user(state: NameFormState, formData: FormData) {
+export async function update_user(_: NameFormState, formData: FormData) {
     const validateFields = NameFormSchema.safeParse({
         firstname: formData.get('firstname'),
     });

@@ -58,7 +58,7 @@ export default function Navbar(props: {
             window.removeEventListener(ADD_TO_CART_EVENT, handleStorage);
             window.removeEventListener("storage", handleNotFocusedTabUpdateAmount);
         }
-    }, [props.shoppingCart, props.user?.id]);
+    }, [props.shoppingCart]);
 
     return (
         <Card className="container py-3 px-4 border-0 flex flex-row items-center
