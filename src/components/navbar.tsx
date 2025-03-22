@@ -14,6 +14,7 @@ import type { User } from '@supabase/supabase-js'
 import {LOCAL_STORAGE_KEY, ADD_TO_CART_EVENT, ShoppingCartRequestType, ShoppingCartTypeWithoutUser} from "@/lib/definitions";
 import { useEffect, useState } from "react";
 import {putShoppingCart} from "@/app/actions";
+import Link from "next/link";
 
 const HOME_URL = "/";
 const LOGIN_URL = "/login";
@@ -66,29 +67,39 @@ export default function Navbar(props: {
         >
             <ul className="hidden md:flex items-center gap-10 text-card-foreground">
                 <li className="text-primary font-medium">
-                    <a href={HOME_URL}>Kuraiji.me</a>
+                    <Link href={HOME_URL}>Kuraiji.me</Link>
                 </li>
             </ul>
             <div className="flex items-center">
-                <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
-                    {props.user ? <a href={ACCOUNT_URL}>Account</a> : <a href={LOGIN_URL}>Get Started</a>}
-                </Button>
+
+                    {props.user ?
+                        <Link href={ACCOUNT_URL}>
+                            <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
+                                Account
+                            </Button>
+                        </Link> :
+                        <Link href={LOGIN_URL}>
+                            <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
+                                Get Started
+                            </Button>
+                        </Link>}
+
                 {props.user ?
-                    <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
-                        <a href={SHOPPING_CART_URL}>
-                            <div className="relative inline-block">
-                                <ShoppingCart className="w-6 h-6" />
-                                {length > 0 && (
-                                    <Badge
-                                        variant="destructive"
-                                        className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
-                                    >
-                                        {length}
-                                    </Badge>
-                                )}
-                            </div>
-                        </a>
-                    </Button>
+                    <Link href={SHOPPING_CART_URL}>
+                        <Button className="hidden md:block ml-2 mr-2 cursor-pointer">
+                                <div className="relative inline-block">
+                                    <ShoppingCart className="w-6 h-6" />
+                                    {length > 0 && (
+                                        <Badge
+                                            variant="destructive"
+                                            className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
+                                        >
+                                            {length}
+                                        </Badge>
+                                    )}
+                                </div>
+                        </Button>
+                    </Link>
                     : null
                 }
                 <div className="flex md:hidden mr-2 items-center gap-2">
@@ -100,29 +111,37 @@ export default function Navbar(props: {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem>
-                                <a href={HOME_URL}>Home</a>
+                                <Link href={HOME_URL}>Home</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <div className="flex flex-col gap-2">
-                                    <Button className="w-full text-sm">
-                                        {props.user ? <a href={ACCOUNT_URL}>Account</a> : <a href={LOGIN_URL}>Get Started</a>}
-                                    </Button>
+                                        {props.user ? 
+                                            <Link href={ACCOUNT_URL}>
+                                                <Button className="w-full text-sm">
+                                                    Account
+                                                </Button>
+                                            </Link> : 
+                                            <Link href={LOGIN_URL}>
+                                                <Button className="w-full text-sm">
+                                                    Get Started
+                                                </Button>
+                                            </Link>}
                                     {props.user ?
-                                        <Button className="w-full text-sm">
-                                            <a href={SHOPPING_CART_URL}>
-                                                <div className="relative inline-block">
-                                                    <ShoppingCart className="w-6 h-6" />
-                                                    {length > 0 && (
-                                                        <Badge
-                                                            variant="destructive"
-                                                            className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
-                                                        >
-                                                            {length}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </a>
-                                        </Button>
+                                        <Link href={SHOPPING_CART_URL}>
+                                            <Button className="w-full text-sm">
+                                                    <div className="relative inline-block">
+                                                        <ShoppingCart className="w-6 h-6" />
+                                                        {length > 0 && (
+                                                            <Badge
+                                                                variant="destructive"
+                                                                className="absolute -top-2 -right-3 w-5 h-5 flex items-center justify-center p-0 text-xs"
+                                                            >
+                                                                {length}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                            </Button>
+                                        </Link>
                                         : null
                                     }
                                 </div>
