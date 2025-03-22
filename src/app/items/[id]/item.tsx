@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import {LOCAL_STORAGE_KEY, ShoppingCartTypeWithoutUser, ADD_TO_CART_EVENT} from "@/lib/definitions";
+import {useRouter} from "next/navigation";
 
 
 type ItemProps = {
@@ -18,8 +19,10 @@ type ItemProps = {
 }
 
 export default function ItemComponent(props: ItemProps) {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedColor, setSelectedColor] = useState(props.selectedColor);
+    let nf = new Intl.NumberFormat('en-US');
 
     const onColorSelectorClick = (index: number) => {
         window.history.pushState(null, '', `/items/${props.item.id}?color=${props.item.color![index]}`);
@@ -27,6 +30,10 @@ export default function ItemComponent(props: ItemProps) {
     }
 
     const onAddToCart = () => {
+        if(!props.user) {
+            router.push("/login");
+            return;
+        }
         const color = props.item.color ?
             searchParams.get("color") ?
                 searchParams.get("color") :
@@ -60,12 +67,13 @@ export default function ItemComponent(props: ItemProps) {
                 />
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl">{props.item.itemname}</h1>
-                    <div className="flex flex-row gap-4 items-center">
+                    <div className="flex flex-row gap-1 items-center">
+                        <p>{props.item.rating}</p>
                         <Stars rating={props.item.rating}/>
-                        <p>{props.item.ratingnum} ratings</p>
+                        <p className="ml-4">{nf.format(props.item.ratingnum)} ratings</p>
                     </div>
                     <Separator className="my-4"/>
-                    <h2 className="font-bold text-3xl mb-4">${props.item.price}</h2>
+                    <h2 className="font-bold text-3xl mb-4">${nf.format(props.item.price)}</h2>
                     <p className="text-sm w-xs md:w-xl md:mr-10 mb-2">{props.item.description}</p>
                     {props.item.color !== null ?
                         <ColorSelector colors={props.item.color}
@@ -76,7 +84,7 @@ export default function ItemComponent(props: ItemProps) {
 
                         : null
                     }
-                    <Button onClick={onAddToCart} disabled={!props.user}
+                    <Button onClick={onAddToCart}
                         className="bg-amber-300 text-black hover:bg-amber-400 cursor-pointer w-50"
                     >
                         Add to Cart

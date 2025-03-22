@@ -10,6 +10,7 @@ export default function CartItem({Item, OnClick, Index}:
     OnClick:  (index: number) => void,
     Index: number;
 }) {
+    let nf = new Intl.NumberFormat('en-US');
     return (
         <div className="flex flex-col sm:flex-row gap-4 py-4 border-b">
             <div className="flex-shrink-0">
@@ -25,7 +26,7 @@ export default function CartItem({Item, OnClick, Index}:
             <div className="flex-grow space-y-2">
                 <div className="flex justify-between">
                     <h3 className="font-medium">{Item.itemname}</h3>
-                    <p className="font-semibold">${Item.price}</p>
+                    <p className="font-semibold">${nf.format(Item.price)}</p>
                 </div>
                 <div className="flex justify-between items-center pt-2">
                     {

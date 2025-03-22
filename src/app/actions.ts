@@ -4,10 +4,11 @@ import {
     CredentialError,
     ShoppingCartRequestType,
     ShoppingCartResponseType,
-    ShoppingCartType, TransactionRequestType, TransactionResponseType,
+    ShoppingCartType, TransactionResponseType,
     TransactionResponseTypeStringed
 } from "@/lib/definitions";
 import {redirect} from "next/navigation";
+import {Item, ItemStringed} from "@/app/items/[id]/actions";
 
 //DynamoDB
 export type DBUser = {
@@ -176,6 +177,44 @@ export async function getTransaction(userid: string, page: number = 0) {
                     })
                 }
             })
+            return data;
+        });
+    }
+    catch (e) {
+        console.log("Error: ", e);
+    }
+    return null;
+}
+
+export async function getItems() {
+    try {
+        return await fetch(`${process.env.NEXT_PUBLIC_CRUD_URL}/items`,
+            {
+                method: 'GET',
+                cache: 'force-cache',
+                headers: {
+                    "authorizationToken": `${process.env.NEXT_PUBLIC_CRUD_ANON_KEY}`,
+                },
+                next:{revalidate: 60}
+            }).then(async function (res) {
+            if(res.status === 400 || res.status === 502) {
+                return null;
+            }
+            const json_data: ItemStringed[] = await res.json();
+            const data: Item[] = json_data.map((item) => {
+                return {
+                    id: item.id,
+                    itemname: item.itemname,
+                    imageid: item.imageid,
+                    description: item.description,
+                    category: item.category,
+                    subcategory: item.subcategory,
+                    color: item.color,
+                    price: parseFloat(item.price),
+                    ratingnum: parseFloat(item.ratingnum),
+                    rating: parseFloat(item.rating)
+                }
+            });
             return data;
         });
     }

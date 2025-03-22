@@ -2,7 +2,6 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { Dispatch, SetStateAction } from "react";
 import { NameFormSchema, NameFormState } from "@/lib/definitions";
 
 export async function update_user(state: NameFormState, formData: FormData) {
@@ -63,14 +62,7 @@ export async function signout() {
     redirect('/')
 }
 
-export async function deleteAccount(onError: Dispatch<SetStateAction<{
-    message: string | undefined,
-    disabled: boolean,
-}>>) {
-    onError({
-        message: "",
-        disabled: true
-    });
+export async function deleteAccount() {
 
     const supabase = await createClient(true)
 
@@ -79,10 +71,6 @@ export async function deleteAccount(onError: Dispatch<SetStateAction<{
     } = await supabase.auth.getUser();
 
     if (!user) {
-        onError({
-            message: "Error in checking user status, please try again later",
-            disabled: false
-        });
         return;
     }
 
@@ -91,10 +79,6 @@ export async function deleteAccount(onError: Dispatch<SetStateAction<{
     const supaRes = await supabase.auth.admin.deleteUser(userid, true);
 
     if(supaRes.error) {
-        onError({
-            message: `${supaRes.error.message}, please try again later`,
-            disabled: false
-        });
         return;
     }
 
@@ -113,10 +97,6 @@ export async function deleteAccount(onError: Dispatch<SetStateAction<{
     }
     catch (fetchError) {
         await supabase.from('users').update({deleted_at: null}).eq('id', userid);
-        onError({
-            message: `${fetchError}, please try again later`,
-            disabled: false
-        });
         return;
     }
     finally {

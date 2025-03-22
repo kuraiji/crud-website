@@ -119,7 +119,12 @@ export default function SettingsPage(props: {user: User, dbUser: DBUser, transac
                         <CardFooter>
                             <div className="flex flex-col">
                                 <div>
-                                    <Button onClick={async () => await deleteAccount(setDeleteError)}
+                                    <Button onClick={async () => {
+                                        setDeleteError({message: undefined, disabled: true});
+                                        await deleteAccount()
+                                        setDeleteError({message: "Failed to delete account, please try again later",
+                                            disabled: false});
+                                    }}
                                             className="cursor-pointer" variant="destructive"
                                             disabled={deleteError.disabled}
                                     >

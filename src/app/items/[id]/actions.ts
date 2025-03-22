@@ -13,6 +13,19 @@ export type Item = {
     color: string[] | null
 }
 
+export type ItemStringed = {
+    id: string,
+    itemname: string,
+    description: string,
+    price: string,
+    rating: string,
+    ratingnum: string,
+    category: string,
+    subcategory: string,
+    imageid: string,
+    color: string[] | null
+}
+
 export async function getItemById(id: string) {
     try {
         return await fetch(`${process.env.NEXT_PUBLIC_CRUD_URL}/item/${id}`,

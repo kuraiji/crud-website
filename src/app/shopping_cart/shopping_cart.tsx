@@ -16,6 +16,7 @@ import {useCallback, useState} from "react";
 import {putTransaction} from "@/app/shopping_cart/actions";
 
 export default function ShoppingCart(props: {User: User}) {
+    let nf = new Intl.NumberFormat('en-US');
     const router = useRouter();
     const [cart, setCart] = useLocalStorage(LOCAL_STORAGE_KEY, []);
     const [shipping, setShipping] = useState("standard");
@@ -111,7 +112,7 @@ export default function ShoppingCart(props: {User: User}) {
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Subtotal</span>
                                     <Nossr>
-                                        <span>${CalculateTotal()}</span>
+                                        <span>${nf.format(CalculateTotal())}</span>
                                     </Nossr>
                                 </div>
                                 <Separator />
@@ -143,18 +144,20 @@ export default function ShoppingCart(props: {User: User}) {
                                     <span>Total</span>
                                     <Nossr>
                                         <span>${
-                                            typeof (CalculateTotal() + shippingPrice + tax) === "number" ? (CalculateTotal() + shippingPrice + tax).toFixed(2) : 0
+                                            typeof (CalculateTotal() + shippingPrice + tax) === "number" ? nf.format(CalculateTotal() + shippingPrice + tax) : 0
                                         }</span>
                                     </Nossr>
                                 </div>
-                                <Button onClick={OnPurchase}
-                                    className="w-full"
-                                    size="lg"
-                                    disabled={busy || cart.length === 0}
-                                >
-                                    <ShoppingBag className="mr-2 h-4 w-4" />
-                                    Purchase
-                                </Button>
+                                <Nossr>
+                                    <Button onClick={OnPurchase}
+                                            className="w-full"
+                                            size="lg"
+                                            disabled={busy || cart.length === 0}
+                                    >
+                                        <ShoppingBag className="mr-2 h-4 w-4" />
+                                        Purchase
+                                    </Button>
+                                </Nossr>
                                 <div className="text-center text-sm text-muted-foreground mt-4">
                                     <p>Secure Checkout</p>
                                     <p>Free returns within 1 second of ordering</p>

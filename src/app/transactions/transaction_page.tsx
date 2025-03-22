@@ -14,15 +14,25 @@ import {getTransaction} from "@/app/actions";
 import {useRouter} from "next/navigation";
 
 export default function TransactionPage(props: {initalTransaction: TransactionResponseType}) {
+    let nf = new Intl.NumberFormat('en-US');
     const isMount = useIsMount();
     const userId = props.initalTransaction[0].userid;
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [currentTransactions, setCurrentTransactions] = useState<TransactionResponseType>(props.initalTransaction);
     const [selectedTransaction, setSelectedTransaction] = useState<TransactionResponseTypeIndividual>(props.initalTransaction[0]);
-    const [isFinalPage, setIsFinalPage] = useState<boolean>(false);
+    const [isFinalPage, setIsFinalPage] = useState<boolean>(true);
 
     useEffect(()=>{
-        if(isMount) return;
+        if(isMount) {
+            getTransaction(userId, currentPage + 1).then((inner_response) => {
+                if(inner_response === null) useRouter().replace("/error");
+                if(inner_response!.length === 0){
+                    setIsFinalPage(true);
+                }
+                else setIsFinalPage(false);
+            });
+            return;
+        }
         getTransaction(userId, currentPage).then((response) => {
             if(response === null) useRouter().replace("/error");
             setCurrentTransactions(response!);
@@ -33,7 +43,7 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
                     setIsFinalPage(true);
                 }
                 else setIsFinalPage(false);
-            })
+            });
         });
     },[currentPage])
 
@@ -85,7 +95,7 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
                 <div className="flex-grow space-y-2">
                     <div className="flex justify-between">
                         <h3 className="font-medium">{cartItem.itemname}</h3>
-                        <p className="font-semibold">${cartItem.price}</p>
+                        <p className="font-semibold">${nf.format(cartItem.price)}</p>
                     </div>
                     <div className="flex justify-between items-center pt-2">
                         {
@@ -137,7 +147,7 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Subtotal</span>
                                 <Nossr>
-                                    <span>${selectedTransaction.subtotal}</span>
+                                    <span>${nf.format(selectedTransaction.subtotal)}</span>
                                 </Nossr>
                             </div>
                             <Separator />
@@ -154,7 +164,7 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
                                 <span>Total</span>
                                 <Nossr>
                                         <span>${
-                                            (selectedTransaction.subtotal + selectedTransaction.shipping + selectedTransaction.tax).toFixed(2)
+                                            nf.format(selectedTransaction.subtotal + selectedTransaction.shipping + selectedTransaction.tax)
                                         }</span>
                                 </Nossr>
                             </div>

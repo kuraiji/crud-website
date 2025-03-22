@@ -66,6 +66,6 @@ export async function improved_signup(state: SignupFormState, formData: FormData
         }
     } finally {
         revalidatePath('/', 'layout')
-        redirect('/')
+        redirect('/?check_email')
     }
 }
