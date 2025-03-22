@@ -14,8 +14,9 @@ import {getTransaction} from "@/app/actions";
 import {useRouter} from "next/navigation";
 
 export default function TransactionPage(props: {initalTransaction: TransactionResponseType}) {
-    let nf = new Intl.NumberFormat('en-US');
+    const nf = new Intl.NumberFormat('en-US');
     const isMount = useIsMount();
+    const router = useRouter();
     const userId = props.initalTransaction[0].userid;
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [currentTransactions, setCurrentTransactions] = useState<TransactionResponseType>(props.initalTransaction);
@@ -25,7 +26,7 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
     useEffect(()=>{
         if(isMount) {
             getTransaction(userId, currentPage + 1).then((inner_response) => {
-                if(inner_response === null) useRouter().replace("/error");
+                if(inner_response === null) router.replace("/error");
                 if(inner_response!.length === 0){
                     setIsFinalPage(true);
                 }
@@ -34,11 +35,11 @@ export default function TransactionPage(props: {initalTransaction: TransactionRe
             return;
         }
         getTransaction(userId, currentPage).then((response) => {
-            if(response === null) useRouter().replace("/error");
+            if(response === null) router.replace("/error");
             setCurrentTransactions(response!);
             setSelectedTransaction(response![0]);
             getTransaction(userId, currentPage + 1).then((inner_response) => {
-                if(inner_response === null) useRouter().replace("/error");
+                if(inner_response === null) router.replace("/error");
                 if(inner_response!.length === 0){
                     setIsFinalPage(true);
                 }

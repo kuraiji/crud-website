@@ -10,7 +10,7 @@ export default function CartItem({Item, OnClick, Index}:
     OnClick:  (index: number) => void,
     Index: number;
 }) {
-    let nf = new Intl.NumberFormat('en-US');
+    const nf = new Intl.NumberFormat('en-US');
     return (
         <div className="flex flex-col sm:flex-row gap-4 py-4 border-b">
             <div className="flex-shrink-0">

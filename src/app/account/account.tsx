@@ -19,7 +19,7 @@ type DeleteErrorType = {
 
 export default function SettingsPage(props: {user: User, dbUser: DBUser, transactions: TransactionResponseType | null}) {
     const [deleteError, setDeleteError] = useState<DeleteErrorType>({message: undefined, disabled: false});
-    // @ts-ignore
+    // @ts-expect-error
     const [updateUserState, updateUserAction, updateUserPending] = useActionState(update_user, undefined);
     return (
         <div className="container mx-auto py-6 space-y-8">

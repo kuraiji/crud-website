@@ -6,13 +6,11 @@ type ErrorName =
 export class CredentialError extends Error {
     name: ErrorName;
     message: string;
-    cause: any;
 
-    constructor(message: string, cause: any) {
+    constructor(message: string) {
         super();
         this.name = "NOT_SIGNED_IN";
         this.message = message;
-        this.cause = cause;
     }
 }
 

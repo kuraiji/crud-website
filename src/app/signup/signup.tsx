@@ -18,7 +18,7 @@ export function SignupForm({
                               className,
                               ...props
                           }: React.ComponentPropsWithoutRef<"div">) {
-    // @ts-ignore
+    // @ts-expect-error
     const [state, action, pending] = useActionState(improved_signup, undefined);
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>

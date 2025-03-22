@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 
 export default function CarouselItem(props: {item: Item}) {
-    let nf = new Intl.NumberFormat('en-US');
+    const nf = new Intl.NumberFormat('en-US');
     return (
         <CarouselItemComponent className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
             <div className="p-1">

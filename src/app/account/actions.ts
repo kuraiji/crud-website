@@ -38,7 +38,7 @@ export async function update_user(state: NameFormState, formData: FormData) {
             if (res.status === 400) throw new Error(res.statusText);
         });
     }
-    catch (fetchError) {
+    catch (_) {
         return {
             message: "Failed to update user, please try again later.",
         }
@@ -95,7 +95,7 @@ export async function deleteAccount() {
                 await supabase.auth.admin.deleteUser(userid);
             });
     }
-    catch (fetchError) {
+    catch (_) {
         await supabase.from('users').update({deleted_at: null}).eq('id', userid);
         return;
     }

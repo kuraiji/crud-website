@@ -16,7 +16,7 @@ import {useCallback, useState} from "react";
 import {putTransaction} from "@/app/shopping_cart/actions";
 
 export default function ShoppingCart(props: {User: User}) {
-    let nf = new Intl.NumberFormat('en-US');
+    const nf = new Intl.NumberFormat('en-US');
     const router = useRouter();
     const [cart, setCart] = useLocalStorage(LOCAL_STORAGE_KEY, []);
     const [shipping, setShipping] = useState("standard");

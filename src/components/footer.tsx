@@ -38,7 +38,7 @@ export default function Footer() {
                         Backend powered and secured with API Gateway, AWS Lambda, and DynamoDB.
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        Website is actually a portfolio piece and you can't actually buy any of the products listed.
+                        Website is actually a portfolio piece and you can&apos;t actually buy any of the products listed.
                     </p>
                 </div>
             </div>

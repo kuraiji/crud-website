@@ -8,12 +8,13 @@ import {
     CarouselContent,
     CarouselNext,
     CarouselPrevious,
+    CarouselApi
 } from "@/components/ui/carousel"
 import {Item} from "@/app/items/[id]/actions";
 import CarouselItem from "@/components/carousel_item"
 
 export function Carousel(props: { items: Item[]}) {
-    const [api, setApi] = React.useState<any>()
+    const [api, setApi] = React.useState<CarouselApi>()
     const [current, setCurrent] = React.useState(0)
     const [count, setCount] = React.useState(0)
 

@@ -22,7 +22,7 @@ export default function ItemComponent(props: ItemProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedColor, setSelectedColor] = useState(props.selectedColor);
-    let nf = new Intl.NumberFormat('en-US');
+    const nf = new Intl.NumberFormat('en-US');
 
     const onColorSelectorClick = (index: number) => {
         window.history.pushState(null, '', `/items/${props.item.id}?color=${props.item.color![index]}`);

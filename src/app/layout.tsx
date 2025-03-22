@@ -35,7 +35,7 @@ export default async function RootLayout({
             await putShoppingCart();
         }
     }
-    catch (error) {
+    catch (_) {
         shoppingcart = null;
     }
   return (

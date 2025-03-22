@@ -37,13 +37,14 @@ export default function Navbar(props: {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(props.shoppingCart?.cart ? props.shoppingCart?.cart  : []))
         const handleStorage = async (event: CustomEvent<ShoppingCartTypeWithoutUser>) => {
             setLength(event.detail.length);
-             await putShoppingCart({
-                 userid: props.user?.id,
-                 shoppingCart: {
-                     userid: props.user?.id!,
-                     cart: event.detail
-                 }
-             });
+            if(!props.user?.id) return;
+            await putShoppingCart({
+                userid: props.user?.id,
+                shoppingCart: {
+                    userid: props.user?.id,
+                    cart: event.detail
+                }
+            });
         }
         const handleNotFocusedTabUpdateAmount = (event: StorageEvent) => {
             if(!event.newValue) {
@@ -57,7 +58,7 @@ export default function Navbar(props: {
             window.removeEventListener(ADD_TO_CART_EVENT, handleStorage);
             window.removeEventListener("storage", handleNotFocusedTabUpdateAmount);
         }
-    }, [props.shoppingCart]);
+    }, [props.shoppingCart, props.user?.id]);
 
     return (
         <Card className="container py-3 px-4 border-0 flex flex-row items-center
