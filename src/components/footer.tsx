@@ -1,11 +1,11 @@
-import { Github, Linkedin } from "lucide-react"
+import { Github, Linkedin, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
 export default function Footer() {
     return (
-        <footer className="bg-muted py-12 mt-20">
+        <footer className="bg-muted py-12 mt-20 flex justify-center items-center flex-col">
             <div className="ml-20 container grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold">Kuraiji.me</h3>
@@ -16,6 +16,12 @@ export default function Footer() {
                         Created by Payman Ahmadpour
                     </h2>
                     <div className="flex space-x-4">
+                        <Button variant="ghost" size="icon">
+                            <Link href="https://kuraiji.github.io/portfolio/">
+                                <Briefcase className="h-5 w-5" />
+                                <span className="sr-only">Github</span>
+                            </Link>
+                        </Button>
                         <Button variant="ghost" size="icon">
                             <Link href="https://github.com/kuraiji">
                                 <Github className="h-5 w-5" />
@@ -32,13 +38,13 @@ export default function Footer() {
                 </div>
                 <div>
                     <p className="text-sm text-muted-foreground">
-                        Frontend powered by Next.js, React, Tailwind, Shadcn.
+                        Frontend powered by Next.js, React, Tailwind, Shadcn, and Supabase.
                     </p>
                     <p className="text-sm text-muted-foreground">
                         Backend powered and secured with API Gateway, AWS Lambda, and DynamoDB.
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        Website is actually a portfolio piece and you can&apos;t actually buy any of the products listed.
+                        Website is a portfolio piece and you can&apos;t actually buy any of the products listed.
                     </p>
                 </div>
             </div>

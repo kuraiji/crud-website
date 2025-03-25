@@ -67,7 +67,7 @@ export default function Navbar(props: {
         >
             <ul className="hidden md:flex items-center gap-10 text-card-foreground">
                 <li className="text-primary font-medium">
-                    <Link href={HOME_URL}>Kuraiji.me</Link>
+                    <Link className="hover:underline" href={HOME_URL}>Kuraiji.me</Link>
                 </li>
             </ul>
             <div className="flex items-center">

@@ -1,7 +1,7 @@
 export function HeroSection() {
     return (
-        <section className="relative bg-muted py-12 md:py-24 lg:py-32">
-            <div className="container flex flex-col items-center space-y-4 text-center ml-26">
+        <section className="relative bg-muted py-12 md:py-24 lg:py-32 flex justify-center">
+            <div className="container flex flex-col items-center space-y-4 text-center justify-center">
                 <div className="space-y-2">
                     <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                         Welcome to <span className="text-primary">Kuraiji.me</span>
